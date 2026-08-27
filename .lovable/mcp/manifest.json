@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://szloyoaepetwvwhndkwi.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "verdant-vision",
+      "version": "0.1.0",
+      "title": "Verdant Vision"
+    },
+    "tools": [
+      {
+        "name": "classify_weed_image",
+        "title": "Classify a weed image",
+        "description": "Run the app's AI vision classifier on a plant photo (public https image URL) and return the top candidate weed species with confidence, risk and treatment. Optionally save the result to the user's history.",
+        "annotations": {
+          "readOnlyHint": false,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "image_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Public https URL of the plant/weed photo to classify."
+            },
+            "save": {
+              "type": "boolean",
+              "description": "Save the result to the user's classification history (default false)."
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 500,
+              "description": "Optional note stored with a saved result."
+            }
+          },
+          "required": [
+            "image_url"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_classifications",
+        "title": "List weed classifications",
+        "description": "List the signed-in user's saved weed classification history, newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Max rows to return (default 10)."
+            },
+            "risk": {
+              "type": "string",
+              "enum": [
+                "Low",
+                "Medium",
+                "High"
+              ],
+              "description": "Filter by agricultural risk level."
+            },
+            "search": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Filter by weed common name (partial match)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_classification",
+        "title": "Get classification detail",
+        "description": "Fetch one saved weed classification, including the full AI result with all candidate species.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Classification record id."
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "weed_stats",
+        "title": "Weed detection statistics",
+        "description": "Summarize the signed-in user's weed detections: totals, risk breakdown, most common species and average confidence.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "description": "Only include detections from the last N days."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "delete_classification",
+        "title": "Delete classification",
+        "description": "Permanently delete one of the signed-in user's saved weed classifications.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Classification record id to delete."
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
